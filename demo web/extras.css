@@ -1,0 +1,63 @@
+/* ===== الأسر المنتجة: بانر، بحث، أقسام، فيد عمودي ===== */
+.open-banner{display:flex;align-items:center;justify-content:space-between;gap:16px;max-inline-size:560px;margin:0 auto 20px;padding:18px 26px;border-radius:22px;background:var(--grad);color:var(--on-grad);text-decoration:none;box-shadow:var(--sh);transition:transform .2s,filter .2s}
+.open-banner:hover{transform:translateY(-3px);filter:brightness(1.06)}
+.open-banner b{display:block;font-size:1.25rem;font-weight:800}
+.open-banner small{opacity:.9;font-size:.9rem}
+.open-banner>span:last-child{font-size:1.8rem}
+
+.fam-tools{display:flex;align-items:center;gap:12px;max-inline-size:560px;margin:0 auto 12px}
+.fam-tools input{flex:1;padding:12px 18px;font:inherit;color:var(--ink);background:var(--soft);border:1px solid var(--edge);border-radius:999px}
+.fam-tools input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px var(--ring)}
+#famCount{color:var(--mu);font-weight:700;white-space:nowrap}
+.chips{display:flex;gap:8px;flex-wrap:wrap;max-inline-size:560px;margin:0 auto 20px}
+.chip{padding:8px 16px;border-radius:999px;border:1px solid var(--edge);background:var(--card);color:var(--mu);font:inherit;font-weight:700;font-size:.92rem;cursor:pointer;transition:background .2s,color .2s}
+.chip small{opacity:.7}
+.chip:hover{background:var(--mint)}
+.chip[aria-pressed=true]{background:var(--grad);color:var(--on-grad);border-color:transparent}
+
+/* الفيد: بوستات فوق بعض مثل انستغرام */
+.reel-wrap{max-inline-size:560px;margin-inline:auto}
+.reel{display:flex;flex-direction:column;gap:24px}
+.reel .post{inline-size:100%}
+.reel .post-img{aspect-ratio:auto;block-size:auto;object-fit:contain;max-block-size:640px;cursor:zoom-in}
+.reel .post-img[src^="data:"]{aspect-ratio:16/9;object-fit:cover;cursor:default}
+.post-head .tag{margin-inline-start:auto;padding:4px 12px;border-radius:999px;background:var(--mint);color:var(--teal-d);font-size:.8rem;font-weight:700}
+.btn-link.alt{background:var(--mint);color:var(--teal-d);margin-inline-start:8px}
+.empty{padding:40px 20px;text-align:center;color:var(--mu)}
+
+/* ===== صفحة فتح المتجر + حاسبة التسعير ===== */
+.steps{counter-reset:s;list-style:none;padding-inline:30px}
+.steps li{counter-increment:s;position:relative;padding:18px 58px 18px 0;border-block-end:1px solid var(--edge)}
+.steps li:last-child{border:0}
+.steps li::before{content:counter(s);position:absolute;inset-inline-start:0;top:18px;inline-size:40px;block-size:40px;border-radius:50%;display:grid;place-items:center;background:var(--grad);color:var(--on-grad);font-weight:800}
+.steps h3{margin:0 0 4px;font-size:1.1rem;color:var(--teal)}
+.steps p{margin:0;color:var(--mu);line-height:1.9}
+.steps a{color:var(--teal);font-weight:700}
+.price h3{margin:0 0 4px;text-align:center;font-size:1.4rem;font-weight:800}
+.price>.lead{text-align:center;margin-block-end:20px}
+.price-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+.result{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0}
+.result div{padding:12px 16px;border-radius:16px;background:var(--soft);border:1px solid var(--edge)}
+.result dt{font-size:.85rem;color:var(--mu)}
+.result dd{margin:0;font-weight:800;font-size:1.15rem}
+.result .big{grid-column:1/-1;background:var(--grad);color:var(--on-grad);text-align:center}
+.result .big dt{color:inherit;opacity:.9}
+.result .big dd{font-size:1.8rem}
+@media (max-width:600px){.price-grid{grid-template-columns:1fr}}
+
+/* ===== معرض صور متعدد (مثل انستغرام) ===== */
+.gallery{position:relative}
+.slides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.slides::-webkit-scrollbar{display:none}
+.slides img{flex:0 0 100%;inline-size:100%;aspect-ratio:16/10;object-fit:contain;cursor:zoom-in;scroll-snap-align:center;background:var(--soft)}
+.gallery .count{position:absolute;top:12px;inset-inline-end:12px;padding:3px 12px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:.8rem;font-weight:700}
+.g-btn{position:absolute;top:50%;transform:translateY(-50%);inline-size:36px;block-size:36px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:#3E2570;font-size:1.4rem;line-height:1;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.g-btn.prev{inset-inline-start:10px}
+.g-btn.next{inset-inline-end:10px}
+
+/* ===== عرض الصورة كاملة ===== */
+.lightbox{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.92);cursor:zoom-out}
+.lightbox img{max-inline-size:96vw;max-block-size:92vh;object-fit:contain;border-radius:10px}
+.lb-x{position:absolute;top:14px;inset-inline-end:14px;inline-size:44px;block-size:44px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:1.3rem;cursor:pointer}
+
+.slides video{flex:0 0 100%;inline-size:100%;aspect-ratio:16/10;object-fit:contain;background:#000;scroll-snap-align:center}

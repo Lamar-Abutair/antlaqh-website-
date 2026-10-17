@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>انطلاقة</title>
+<link rel="icon" href="photos/the%20webs%20logo/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="extras.css">
+</head>
+<body>
+
+<a class="skip" href="#main">انتقل إلى المحتوى</a>
+
+<!-- ============ HEADER ============ -->
+<header class="top">
+  <div class="wrap bar">
+   <a class="brand" href="#home">
+  <img class="brand-logo" src="photos/the%20webs%20logo/logo.png" alt="شعار انطلاقة" width="54" height="54">
+  <span class="brand-text"><b>انطلاقة</b><small>من أسرنا إلى ريادتنا</small></span>
+</a>
+
+    <nav class="nav" aria-label="القائمة الرئيسية">
+      <a href="#home" aria-current="page" data-page="page-home">الرئيسية</a>
+      <a href="#about" data-page="page-about">الأسر المنتجة</a>
+      <a href="#services" data-page="page-services">قصص الأسر المنتجة</a>
+      <a href="#media" data-page="page-media">تواصل معنا</a>
+      <a href="#apply" data-page="page-apply">التقديم</a>
+    </nav>
+
+    <div class="tools">
+      <form class="search" role="search">
+        <label class="sr" for="q">ابحث في البوابة</label>
+        <input id="q" type="search" placeholder="ابحث في البوابة">
+        <button aria-label="بحث" type="submit"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button>
+      </form>
+      <button class="ib" id="theme" aria-label="تبديل الوضع الداكن"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 13A9 9 0 1111 3a7 7 0 0010 10z"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ============ PAGE: HOME ============ -->
+  <section id="page-home" class="page-view active">
+    <div class="hero">
+      <div class="wrap">
+       <div>
+         <h1>انطلاقة</h1>
+         <p class="slogan">من أسرنا إلى ريادتنا</p>
+         <p>تجمع الأسر الداعمة والطالبات لدعمهم وتوفير خدمات تعليمية متكاملة.</p>
+         <ul class="roles"><li>الطالبات</li><li>المعلمات</li><li>الأسر الداعمة</li></ul>
+       </div>
+
+        <div class="login" role="region" aria-labelledby="lt">
+          <div class="medal"><img src="photos/the%20webs%20logo/logo.png" alt="شعار انطلاقة" width="120" height="120"></div>
+          <h2 id="lt">تسجيل الدخول</h2>
+          <p class="sub">اختر الحساب المناسب لك</p>
+          <button class="btn p" id="ms" type="button">
+            <svg width="22" height="22" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9.1 3.6l6.8-6.8C35.8 2.4 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.9 6.1C12.4 13.5 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 6.9l7.4 5.7c4.3-4 6.9-9.9 6.9-17.1z"/><path fill="#FBBC05" d="M10.5 28.7a14.5 14.5 0 010-9.4l-7.9-6.1a24 24 0 000 21.6l7.9-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.900-5.800l-7.400-5.700c-2.100 1.400-4.800 2.300-8.500 2.300-6.300 0-11.600-4.200-13.500-9.900l-7.900 6.100C6.500 42.600 14.600 48 24 48z"/></svg>
+            <span><span>الدخول بحساب جوجل</span><small>حساب مدرسي أو شخصي</small></span>
+          </button>
+          <p class="status" id="status" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PAGE: ABOUT (الأسر المنتجة) ============ -->
+  <section id="page-about" class="page-view wrap" hidden>
+    <h1>الأسر المنتجة</h1>
+
+    <a class="open-banner" href="#learn" data-go="learn">
+      <span><b>تريدين فتح متجرك الخاص؟</b><small>تعلّمي الخطوات وسعّري منتجاتك بأداة جاهزة</small></span>
+      <span aria-hidden="true">‹</span>
+    </a>
+
+    <div class="fam-tools">
+      <input id="famSearch" type="search" placeholder="ابحثي عن قسم أو متجر: ورد، حلويات، خياطة..." aria-label="بحث في الأسر المنتجة">
+      <span id="famCount" role="status"></span>
+    </div>
+    <div class="chips" id="chips" aria-label="الأقسام"></div>
+
+    <div class="fam-layout">
+      <div class="feed">
+        <article class="post" id="post" aria-live="polite"></article>
+        <div class="pager">
+          <button type="button" id="prevPost" aria-label="الأسرة السابقة">›</button>
+          <div class="dots" id="dots" role="tablist" aria-label="الأسر المنتجة"></div>
+          <button type="button" id="nextPost" aria-label="الأسرة التالية">‹</button>
+        </div>
+      </div>
+      <aside class="fam-side" id="famSide">
+        <img id="qrImg" alt="رمز QR للحساب" width="180" height="180">
+        <h4>الروابط</h4>
+        <ul id="sideLinks"></ul>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ PAGE: STORIES ============ -->
+  <section id="page-services" class="page-view wrap" hidden>
+    <header class="sec-head">
+      <h2>قصص الأسر المنتجة</h2>
+      <p class="lead">تعرّف على أبرز القصص التي تتحدث عن الأسر المنتجة.</p>
+    </header>
+
+    <div class="panel story-list">
+      <article class="story">
+        <h3>1- قصة أم سارة - من المطبخ إلى متجر</h3>
+        <p>أم سارة كانت تسوي كليجا ومعمول للضيوف بس، جيرانها صاروا يطلبون. بدأت بـ 200 ريال تشتري فيها دقيق وسمن، تسوي في الليل بعد ما ينامون عيالها. شاركت في بازار أسر منتجة في الرياض، في أول يوم باعت كل شيء. اليوم عندها متجر في مرسول وتوصيل، ودخلها الشهري أكثر من 4000 ريال، وكل شغلها من البيت.</p>
+        <p class="moral">العبرة: لا تنتظرين رأس مال كبير، ابدأي بما في يدك.</p>
+      </article>
+
+      <article class="story">
+        <h3>2- عائلة أبو خالد - ورشة الخياطة</h3>
+        <p>الأب متقاعد، والأم تخيط ثياب، والبنات يطرزون. كانوا يخيطون لأهلهم فقط. سجلت الأم في برنامج الأسر المنتجة واخذت دورة تغليف وتسعير. اتفقوا: الأم تقص، البنت الكبيرة تخيط، الصغيرة تصور وتنزل في الانستقرام. الآن يجيهم طلبات لزي موحد لمدارس وحضانات، وصار عندهم دخل ثابت يغطي مصاريف البيت.</p>
+        <p class="moral">العبرة: العمل العائلي يقسم الجهد ويكبر الربح.</p>
+      </article>
+
+      <article class="story">
+        <h3>3- قصة نورة - إعادة التدوير</h3>
+        <p>نورة طالبة جامعة، بدأت تجمع علب الزجاج والخشب المهمل وتسويه تحف وتوزيعات للزواجات. تكلفة القطعة 5 ريال وتبيعها بـ 30 ريال. دخلت مسابقة الحرف اليدوية وفازت، وبلدية الرياض دعمتها بركن مجاني في فعاليات يوم التأسيس. الآن عندها براند باسمها.</p>
+        <p class="moral">العبرة: الفكرة الغريبة هي اللي تتميز، مو لازم تطبخين.</p>
+      </article>
+
+      <article class="story">
+        <h3>4- قصة مؤسس البيك - حلم لم يعش ليرى نجاحه</h3>
+        <p>في عام 1974، افتتح شكور أبو غزالة أول مطعم له في جدة، بعد أن استثمر مدخراته في حلمه. لكن البداية لم تكن سهلة؛ فالناس لم يكونوا معتادين على الدجاج المقلي الذي يقدمه، وكان يعود إلى البيت حزينًا لقلة الزبائن. وبعد سنوات من المحاولة، بدأ الناس يقبلون على المطعم، لكن المؤسس توفي عام 1976، قبل أن يرى النجاح الكبير الذي سيصل إليه مشروعه. الأكثر تأثيرًا أن ابنيه إحسان ورامي قررا مواصلة حلم أبيهما، رغم الديون والصعوبات، وعملا على تطوير المطعم حتى أصبح البيك من أشهر العلامات التجارية السعودية.</p>
+        <p class="moral">العبرة: التأسيس الحقيقي يحتاج إلى وقت وصبر، وما بدأ بحلم بسيط في مدينة جدة أصبح اليوم علامة فارقة وفخراً وطنياً.</p>
+      </article>
+    </div>
+
+    <div class="panel supporters">
+      <h2>المنشآت الداعمة للأسر المنتجة</h2>
+      <ul>
+        <li>بنك التنمية الاجتماعية</li>
+        <li>وزارة الموارد البشرية والتنمية الاجتماعية</li>
+        <li>مركز جنى للتمويل الأصغر</li>
+        <li>الهيئة العامة للمنشآت الصغيرة والمتوسطة</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ PAGE: CONTACT ============ -->
+  <section id="page-media" class="page-view wrap" hidden>
+    <header class="sec-head"><h2>تواصل معنا</h2></header>
+    <aside class="sup">
+      <div class="ic"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 14v-2a8 8 0 0116 0v2"/><rect x="3" y="14" width="4" height="6" rx="1.5"/><rect x="17" y="14" width="4" height="6" rx="1.5"/></svg></div>
+      <h2 id="st">هل تحتاج إلى مساعدة بخصوص الموقع؟</h2>
+      <a class="insta-btn" href="https://www.instagram.com/skl105wuzhere/" target="_blank" rel="noopener"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg><span>انستغرام</span></a>
+    </aside>
+  </section>
+
+  <!-- ============ PAGE: APPLY ============ -->
+  <section id="page-apply" class="page-view wrap" hidden>
+    <header class="sec-head">
+      <h2>التقديم</h2>
+      <p class="lead">عبّئي بيانات متجرك لتنضمي إلى الأسر المنتجة.</p>
+    </header>
+
+    <form class="panel apply" id="applyForm" novalidate>
+      <h3>تعبئة بيانات المتجر</h3>
+
+      <div class="field">
+        <label for="storeAr">اسم المتجر بالعربي <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="storeAr" name="storeAr" placeholder="مثال: متجر الورد" required autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="storeEn">Store Name in English</label>
+        <input type="text" id="storeEn" name="storeEn" placeholder="e.g., Flower Store" dir="ltr" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="contact">رابط الحساب / رقم التواصل <span class="req" aria-hidden="true">*</span></label>
+        <input type="text" id="contact" name="contact" placeholder="رابط إنستغرام أو رقم الواتساب" required autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="description">وصف قصير للمبيعات</label>
+        <textarea id="description" name="description" rows="4" placeholder="توصيف مختصر لما يقدمه مشروعك..."></textarea>
+      </div>
+
+      <p class="note"><b>تنبيه:</b> عند إرسال البيانات سيفتح لك تطبيق البريد، يرجى إرفاق <b>3 إلى 5 صور</b> للمشروع قبل الضغط على زر الإرسال.</p>
+
+      <button class="start" type="submit">إرسال البيانات عبر البريد</button>
+      <p class="form-status" id="applyStatus" role="status" aria-live="polite"></p>
+    </form>
+  </section>
+
+  <!-- ============ PAGE: LEARN (تريدين فتح متجرك الخاص؟) ============ -->
+  <section id="page-learn" class="page-view wrap" hidden>
+    <header class="sec-head">
+      <h2>تريدين فتح متجرك الخاص؟</h2>
+      <p class="lead">خطوات بسيطة من الفكرة إلى أول طلب.</p>
+    </header>
+
+    <ol class="panel steps">
+      <li><h3>اختاري فكرتك</h3><p>ابدئي بشيء تتقنينه وعليه طلب حولك: حلويات، ورد، خياطة، تدوير... اسألي أهلك وجيرانك وش يحتاجون.</p></li>
+      <li><h3>جرّبي بدفعة صغيرة</h3><p>اصنعي كمية قليلة وخذي رأي ناس تثقين برأيهم، وحسّني المنتج قبل ما تكبّرين.</p></li>
+      <li><h3>احسبي تكلفتك</h3><p>سجّلي كل ريال تصرفينه: المواد، التغليف، وقتك. بدون هذا ما تعرفين تربحين أو لا.</p></li>
+      <li><h3>التراخيص والدعم</h3><p>اسألي الجهات الداعمة المذكورة في صفحة القصص (مثل بنك التنمية الاجتماعية) عن المتطلبات الحالية وطرق التمويل.</p></li>
+      <li><h3>صوّري وغلّفي</h3><p>صور واضحة بإضاءة طبيعية وتغليف مرتب يرفعون قيمة منتجك قبل ما يجربونه.</p></li>
+      <li><h3>افتحي حسابك وابدئي البيع</h3><p>سوّي حساب إنستغرام باسم المتجر، ضيفي رقم التواصل، وشاركي في البازارات. ثم قدّمي من صفحة <a href="#apply" data-go="apply">التقديم</a> لتنضمي للأسر المنتجة.</p></li>
+      <li><h3>سعّري منتجاتك</h3><p>استخدمي الأداة بالأسفل: تحسب لك التكلفة وسعر البيع المناسب.</p></li>
+    </ol>
+
+    <form class="panel price" id="priceForm" novalidate>
+      <h3>🧮 أداة التسعير</h3>
+      <p class="lead">اكتبي أرقام دفعة واحدة، والنتيجة تتحدث تلقائيًا.</p>
+      <div class="price-grid">
+        <div class="field"><label for="mat">تكلفة المواد (ريال)</label><input id="mat" type="number" min="0" step="any" inputmode="decimal" placeholder="مثال: 80"></div>
+        <div class="field"><label for="pack">التغليف (ريال)</label><input id="pack" type="number" min="0" step="any" inputmode="decimal" placeholder="مثال: 20"></div>
+        <div class="field"><label for="oth">مصاريف أخرى: غاز، كهرباء، توصيل (ريال)</label><input id="oth" type="number" min="0" step="any" inputmode="decimal" placeholder="مثال: 10"></div>
+        <div class="field"><label for="hrs">ساعات العمل على الدفعة</label><input id="hrs" type="number" min="0" step="any" inputmode="decimal" placeholder="مثال: 3"></div>
+        <div class="field"><label for="wage">أجر ساعتك (ريال)</label><input id="wage" type="number" min="0" step="any" inputmode="decimal" placeholder="مثال: 20"></div>
+        <div class="field"><label for="pc">عدد القطع في الدفعة</label><input id="pc" type="number" min="1" step="1" inputmode="numeric" placeholder="مثال: 20"></div>
+        <div class="field"><label for="mar">نسبة الربح المطلوبة %</label><input id="mar" type="number" min="0" step="any" inputmode="decimal" value="30"></div>
+        <div class="field"><label for="fee">عمولة المنصة % (إن وجدت)</label><input id="fee" type="number" min="0" max="90" step="any" inputmode="decimal" value="0"></div>
+      </div>
+      <dl class="result" aria-live="polite">
+        <div><dt>إجمالي التكلفة</dt><dd id="rTotal">0</dd></div>
+        <div><dt>تكلفة القطعة</dt><dd id="rCost">0</dd></div>
+        <div class="big"><dt>سعر البيع المقترح</dt><dd id="rPrice">0</dd></div>
+        <div><dt>ربح القطعة</dt><dd id="rProfit">0</dd></div>
+        <div><dt>ربح الدفعة كاملة</dt><dd id="rAll">0</dd></div>
+      </dl>
+      <p class="note">السعر مقرّب لأقرب نصف ريال. قارنيه بأسعار المتاجر المشابهة قبل ما تعتمدينه.</p>
+    </form>
+  </section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="fg">
+      <div class="fc about">
+        <h3>انطلاقة</h3>
+        <p>بوابة تعليمية تجريبية مصممة بالاستلهام من البوابات التعليمية الحكومية. الشعار والمحتوى للتوضيح فقط.</p>
+        <div class="soc">
+          <a href="https://www.instagram.com/skl105wuzhere/" target="_blank" rel="noopener" aria-label="انستغرام">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="fc">
+        <strong>فريق العمل والإشراف</strong>
+        <span>إشراف المعلمة: جواهر آل فواز</span>
+        <span>البرمجة والتصميم والبيانات: ملاذ الجعيدي</span>
+        <span>برمجة حسابات قوقل: لمار أبوطير</span>
+      </div>
+
+      <div class="fc">
+        <strong>المحتوى والدعم</strong>
+        <span>قصص الأسر المنتجة: ميمونة الضباعي , ايات الجبان</span>
+        <span>جهات تدعم الأسر المنتجة: ألين الشعلان</span>
+        <span>التواصل الاجتماعي: بسمةسعلس</span>
+        <span>تصميم شعار الموقع:عنود عبدة </span>
+      </div>
+    </div>
+    <p class="foot-tag">انطلاقة — من أسرنا إلى ريادتنا · المدرسة الخامسة بعد المائة</p>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+<script src="families-data.js"></script>
+<script src="extras.js"></script>
+</body>
+</html>
