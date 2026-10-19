@@ -86,21 +86,49 @@
           mk(k, v, FAMILIES.filter(f => f.cat === k).length)).join("");
     }
 
-    const isVid = p => /\.(mp4|mov|m4v|webm)(\?|$)/i.test(p);
+    const isVid = p => /\\.(mp4|mov|m4v|webm)(\\?|$)/i.test(p);
     const gallery = f => {
       const pics = (f.images && f.images.length ? f.images : [f.image]).filter(Boolean);
-      const items = [...(f.video ? [[f.video, "video"]] : []), ...pics.map(p => [p, isVid(p) ? "video" : "img"])];
-      const el = ([src, kind]) => kind === "video"
-        ? `<video controls playsinline preload="metadata"><source src="${src}" type="${/\.webm/i.test(src) ? "video/webm" : "video/mp4"}"></video>`
-        : `<img src="${src}" alt="منتجات ${f.name}" loading="lazy">`;
-      if (!items.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
-      if (items.length === 1 && items[0][1] === "img") return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
-      const nav = items.length > 1 ? `
-        <button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button>
-        <button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button>
-        <span class="count">1 / ${items.length}</span>` : "";
-      return `<div class="gallery"><div class="slides">${items.map(el).join("")}</div>${nav}</div>`;
+      const hasVideo = Boolean(f.video) || pics.some(isVid);
+      if (hasVideo) {
+        const items = [...(f.video ? [[f.video, "video"]] : []), ...pics.map(p => [p, isVid(p) ? "video" : "img"])];
+        const el = ([src, kind]) => kind === "video"
+          ? `<video controls playsinline preload="metadata"><source src="${src}" type="${/\\.webm/i.test(src) ? "video/webm" : "video/mp4"}"></video>`
+          : `<img src="${src}" alt="منتجات ${f.name}" loading="lazy">`;
+        return `<div class="gallery"><div class="slides">${items.map(el).join("")}</div>${items.length > 1 ? `<button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${items.length}</span>` : ""}</div>`;
+      }
+      if (!pics.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
+      if (pics.length === 1) return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
+      return `<div class="gallery fade-gallery" data-current="0"><div class="slides">${pics.map((src,i)=>`<img src="${src}" alt="منتجات ${f.name} - الصورة ${i+1}" loading="lazy" class="${i===0?"active":""}" aria-hidden="${i!==0}">`).join("")}</div><button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${pics.length}</span></div>`;
     };
+    const showFade = (g, index) => {
+      const imgs = [...g.querySelectorAll(".slides img")];
+      if (!imgs.length) return;
+      const i = ((index % imgs.length) + imgs.length) % imgs.length;
+      imgs.forEach((img,n) => { img.classList.toggle("active",n===i); img.setAttribute("aria-hidden",String(n!==i)); });
+      g.dataset.current=String(i);
+      g.querySelector(".count").textContent=`${i+1} / ${imgs.length}`;
+    };
+    setInterval(() => {
+      if (document.hidden || !box.hidden) return;
+      reel.querySelectorAll(".fade-gallery").forEach(g => {
+        if (Date.now() < Number(g.dataset.pauseUntil||0)) return;
+        showFade(g,Number(g.dataset.current||0)+1);
+      });
+    },3000);
+    reel.addEventListener("touchstart", e => {
+      const g=e.target.closest(".fade-gallery");
+      if(g) g.dataset.touchX=String(e.touches[0].clientX);
+    },{passive:true});
+    reel.addEventListener("touchend", e => {
+      const g=e.target.closest(".fade-gallery");
+      if(!g || !g.dataset.touchX) return;
+      const dx=e.changedTouches[0].clientX-Number(g.dataset.touchX);
+      delete g.dataset.touchX;
+      if(Math.abs(dx)<40)return;
+      showFade(g,Number(g.dataset.current||0)+(dx>0?1:-1));
+      g.dataset.pauseUntil=String(Date.now()+9000);
+    },{passive:true});
 
     const postHTML = f => {
       const on = liked.has(f.name);
@@ -144,12 +172,18 @@
       const post = e.target.closest(".post"); if (!post) return;
       const nav = e.target.closest(".g-btn");
       if (nav) {
+        const fade=nav.closest(".fade-gallery");
+        if(fade){
+          showFade(fade,Number(fade.dataset.current||0)+(nav.dataset.dir==="next"?1:-1));
+          fade.dataset.pauseUntil=String(Date.now()+9000);
+          return;
+        }
         const sl = nav.parentElement.querySelector(".slides");
         const d = getComputedStyle(sl).direction === "rtl" ? -1 : 1;
         sl.scrollBy({ left: (nav.dataset.dir === "next" ? 1 : -1) * d * sl.clientWidth, behavior: "smooth" });
         return;
       }
-      const pic = e.target.closest(".post-img, .slides img");
+      const pic = e.target.closest(".post-img, .slides img.active, .gallery:not(.fade-gallery) .slides img");
       if (pic) { openBox(pic.src, pic.alt); return; }
       const f = FAMILIES.find(x => x.name === post.dataset.name); if (!f) return;
       const like = e.target.closest(".like"), share = e.target.closest(".share");
