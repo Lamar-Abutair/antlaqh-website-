@@ -27,6 +27,31 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeBox(); });
 
     const liked = new Set();
+    // Demo reviews are stored per visitor; public reviews require a database.
+    const reviewKey = name => "antlaqh-reviews:" + name;
+    const readReviews = name => {
+      try {
+        const saved = JSON.parse(localStorage.getItem(reviewKey(name)) || "[]");
+        return Array.isArray(saved) ? saved.slice(0, 30) : [];
+      } catch { return []; }
+    };
+    const safeText = text => String(text).replace(/[&<>"']/g, char =>
+      ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+    const reviewsHTML = name => {
+      const reviews = readReviews(name);
+      const entries = reviews.map(r =>
+        '<div class="review-item"><strong>' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) +
+        '</strong><p>' + safeText(r.text) + '</p></div>').join("");
+      return '<section class="customer-reviews"><h3>تقييمات العملاء</h3>' +
+        '<p class="review-note">التقييمات محفوظة على جهازك فقط حاليًا.</p>' +
+        '<div class="review-list">' + (entries || '<p class="review-empty">كوني أول من يكتب تقييمًا لهذا المتجر.</p>') + '</div>' +
+        '<form class="review-form"><label>تقييمك<select name="rating" required>' +
+        '<option value="">اختاري عدد النجوم</option>' +
+        [5,4,3,2,1].map(n => '<option value="' + n + '">' + "★".repeat(n) + ' (' + n + ')</option>').join("") +
+        '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label>' +
+        '<button type="submit">إرسال التقييم</button></form></section>';
+    };
+
     let cat = "all", term = "";
 
     const art = f => "data:image/svg+xml," + encodeURIComponent(
@@ -73,6 +98,7 @@
           <p><b>${f.name}</b> ${f.desc}</p>
           <a class="btn-link" href="${f.link}" target="_blank" rel="noopener">زيارة المتجر</a>
         </div>
+        ${reviewsHTML(f.name)}
       </article>`;
     };
 
@@ -117,6 +143,26 @@
         else navigator.clipboard?.writeText(f.link).then(() => {
           share.textContent = "✓"; setTimeout(() => (share.textContent = "⤴"), 1500);
         });
+      }
+    });
+
+
+    reel.addEventListener("submit", e => {
+      const form = e.target.closest(".review-form");
+      if (!form) return;
+      e.preventDefault();
+      const post = form.closest(".post");
+      const rating = Number(form.elements.rating.value);
+      const review = form.elements.review.value.trim();
+      if (!post || !Number.isInteger(rating) || rating < 1 || rating > 5 || review.length < 3 || review.length > 500) return;
+      const name = post.dataset.name;
+      const reviews = readReviews(name);
+      reviews.unshift({ rating, text: review });
+      try {
+        localStorage.setItem(reviewKey(name), JSON.stringify(reviews.slice(0, 30)));
+        post.querySelector(".customer-reviews").outerHTML = reviewsHTML(name);
+      } catch {
+        alert("تعذّر حفظ التقييم على هذا الجهاز.");
       }
     });
 

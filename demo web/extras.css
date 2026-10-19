@@ -61,3 +61,16 @@
 .lb-x{position:absolute;top:14px;inset-inline-end:14px;inline-size:44px;block-size:44px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:1.3rem;cursor:pointer}
 
 .slides video{flex:0 0 100%;inline-size:100%;aspect-ratio:16/10;object-fit:contain;background:#000;scroll-snap-align:center}
+
+/* Customer review section */
+.customer-reviews{padding:18px 22px 24px;border-top:1px solid var(--edge)}
+.customer-reviews h3{margin:0 0 4px;font-size:1.15rem;color:var(--ink)}
+.review-note,.review-empty{font-size:.85rem;color:var(--mu);margin:0 0 12px}
+.review-list{display:grid;gap:10px;margin:12px 0}
+.review-item{padding:10px 14px;background:var(--soft);border-radius:12px;overflow-wrap:anywhere}
+.review-item strong{color:var(--gold);letter-spacing:2px}
+.review-item p{margin:4px 0 0;white-space:pre-wrap}
+.review-form{display:grid;gap:12px}
+.review-form label{display:grid;gap:5px;font-weight:700;font-size:.92rem}
+.review-form select,.review-form textarea{font:inherit;width:100%;padding:10px 12px;color:var(--ink);background:var(--card);border:1px solid var(--edge);border-radius:12px}
+.review-form button{border:0;border-radius:12px;background:var(--grad);color:var(--on-grad);font:inherit;font-weight:800;padding:11px 18px;cursor:pointer}
