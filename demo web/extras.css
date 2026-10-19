@@ -112,3 +112,30 @@
   object-fit: contain;
   background: var(--soft);
 }
+
+/* Desktop sizing: all stores except Bloomy get a genuinely compact media viewport.
+   Set dimensions on the gallery itself, not only on its images, so grid/flex
+   containers cannot expand to the image's intrinsic portrait height. */
+@media (min-width: 700px) {
+  .reel .post:not([data-name="تصاميم بلومي"]) .gallery,
+  .reel .post:not([data-name="تصاميم بلومي"]) > .post-img {
+    width: min(100%, 420px);
+    margin-inline: auto;
+  }
+  .reel .post:not([data-name="تصاميم بلومي"]) .gallery .slides {
+    width: 100%;
+    height: 255px;
+    max-height: 255px;
+    aspect-ratio: auto;
+    overflow: hidden;
+  }
+  .reel .post:not([data-name="تصاميم بلومي"]) .gallery .slides img,
+  .reel .post:not([data-name="تصاميم بلومي"]) .gallery .slides video,
+  .reel .post:not([data-name="تصاميم بلومي"]) > .post-img {
+    height: 255px;
+    max-height: 255px;
+    min-height: 0;
+    aspect-ratio: auto;
+    object-fit: contain;
+  }
+}
