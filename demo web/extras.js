@@ -27,29 +27,50 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeBox(); });
 
     const liked = new Set();
-    // Demo reviews are stored per visitor; public reviews require a database.
-    const reviewKey = name => "antlaqh-reviews:" + name;
-    const readReviews = name => {
-      try {
-        const saved = JSON.parse(localStorage.getItem(reviewKey(name)) || "[]");
-        return Array.isArray(saved) ? saved.slice(0, 30) : [];
-      } catch { return []; }
-    };
-    const safeText = text => String(text).replace(/[&<>"']/g, char =>
+    // Public reviews via Supabase REST API. Only a publishable/anon key belongs in config.
+    const config = window.ANTLAQH_SUPABASE || {};
+    const supabaseReady = /^https:\/\/[^/]+\.supabase\.co\/?$/.test(config.url || "") &&
+      typeof config.anonKey === "string" && config.anonKey.length > 10;
+    const reviewCache = new Map();
+    const safeText = value => String(value).replace(/[&<>"']/g, char =>
       ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+    const api = (path, options = {}) => fetch(config.url.replace(/\/$/, "") + "/rest/v1/" + path, {
+      ...options,
+      headers: { apikey: config.anonKey, Authorization: "Bearer " + config.anonKey,
+        "Content-Type": "application/json", ...options.headers }
+    }).then(async response => {
+      if (!response.ok) throw new Error("Supabase request failed: " + response.status);
+      return response.status === 204 ? null : response.json();
+    });
     const reviewsHTML = name => {
-      const reviews = readReviews(name);
+      const reviews = reviewCache.get(name) || [];
       const entries = reviews.map(r =>
-        '<div class="review-item"><strong>' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) +
-        '</strong><p>' + safeText(r.text) + '</p></div>').join("");
+        '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' +
+        "★".repeat(r.rating) + "☆".repeat(5 - r.rating) +
+        '</span><p>' + safeText(r.comment) + '</p></div>').join("");
       return '<section class="customer-reviews"><h3>تقييمات العملاء</h3>' +
-        '<p class="review-note">التقييمات محفوظة على جهازك فقط حاليًا.</p>' +
-        '<div class="review-list">' + (entries || '<p class="review-empty">كوني أول من يكتب تقييمًا لهذا المتجر.</p>') + '</div>' +
-        '<form class="review-form"><label>تقييمك<select name="rating" required>' +
-        '<option value="">اختاري عدد النجوم</option>' +
+        '<p class="review-note">' + (supabaseReady ? 'تظهر التقييمات للجميع فور إرسالها.' : 'التقييمات غير متاحة مؤقتًا حتى يتم ربط قاعدة البيانات.') + '</p>' +
+        '<div class="review-list">' + (entries || '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>') + '</div>' +
+        (supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label>' +
+        '<label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
         [5,4,3,2,1].map(n => '<option value="' + n + '">' + "★".repeat(n) + ' (' + n + ')</option>').join("") +
         '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label>' +
-        '<button type="submit">إرسال التقييم</button></form></section>';
+        '<button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '') + '</section>';
+    };
+    const refreshReviews = async () => {
+      if (!supabaseReady) return;
+      try {
+        const records = await api("reviews?select=business_name,customer_name,rating,comment&approved=eq.true&order=created_at.desc&limit=500");
+        reviewCache.clear();
+        for (const review of records) {
+          if (!reviewCache.has(review.business_name)) reviewCache.set(review.business_name, []);
+          reviewCache.get(review.business_name).push(review);
+        }
+        document.querySelectorAll("#reel .post").forEach(post => {
+          const section = post.querySelector(".customer-reviews");
+          if (section && !section.querySelector(".review-form :focus")) section.outerHTML = reviewsHTML(post.dataset.name);
+        });
+      } catch (error) { console.error("Unable to load reviews", error); }
     };
 
     let cat = "all", term = "";
@@ -147,23 +168,31 @@
     });
 
 
-    reel.addEventListener("submit", e => {
+    reel.addEventListener("submit", async e => {
       const form = e.target.closest(".review-form");
-      if (!form) return;
+      if (!form || !supabaseReady) return;
       e.preventDefault();
       const post = form.closest(".post");
+      const customerName = form.elements.customer_name.value.trim();
       const rating = Number(form.elements.rating.value);
-      const review = form.elements.review.value.trim();
-      if (!post || !Number.isInteger(rating) || rating < 1 || rating > 5 || review.length < 3 || review.length > 500) return;
-      const name = post.dataset.name;
-      const reviews = readReviews(name);
-      reviews.unshift({ rating, text: review });
+      const comment = form.elements.review.value.trim();
+      if (!post || customerName.length < 2 || customerName.length > 60 ||
+          !Number.isInteger(rating) || rating < 1 || rating > 5 ||
+          comment.length < 3 || comment.length > 500) return;
+      const button = form.querySelector('button[type="submit"]');
+      const status = form.querySelector(".review-status");
+      button.disabled = true;
+      status.textContent = "جارٍ إرسال التقييم...";
       try {
-        localStorage.setItem(reviewKey(name), JSON.stringify(reviews.slice(0, 30)));
-        post.querySelector(".customer-reviews").outerHTML = reviewsHTML(name);
-      } catch {
-        alert("تعذّر حفظ التقييم على هذا الجهاز.");
-      }
+        await api("reviews", { method: "POST", headers: { Prefer: "return=minimal" },
+          body: JSON.stringify({ business_name: post.dataset.name, customer_name: customerName, rating, comment }) });
+        form.reset();
+        status.textContent = "شكرًا! تم نشر تقييمك.";
+        await refreshReviews();
+      } catch (error) {
+        status.textContent = "تعذّر إرسال التقييم. حاولي مرة أخرى.";
+        console.error(error);
+      } finally { button.disabled = false; }
     });
 
     // عدّاد الصور 1 / 3
@@ -183,7 +212,7 @@
       return n;
     };
 
-    renderChips(); filter();
+    renderChips(); filter(); refreshReviews();
   }
 
   /* ---------- Pricing calculator ---------- */
