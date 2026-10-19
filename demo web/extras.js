@@ -86,21 +86,54 @@
           mk(k, v, FAMILIES.filter(f => f.cat === k).length)).join("");
     }
 
-    const isVid = p => /\.(mp4|mov|m4v|webm)(\?|$)/i.test(p);
+    // Image-only galleries with crossfade transitions.
     const gallery = f => {
       const pics = (f.images && f.images.length ? f.images : [f.image]).filter(Boolean);
-      const items = [...(f.video ? [[f.video, "video"]] : []), ...pics.map(p => [p, isVid(p) ? "video" : "img"])];
-      const el = ([src, kind]) => kind === "video"
-        ? `<video controls playsinline preload="metadata"><source src="${src}" type="${/\.webm/i.test(src) ? "video/webm" : "video/mp4"}"></video>`
-        : `<img src="${src}" alt="منتجات ${f.name}" loading="lazy">`;
-      if (!items.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
-      if (items.length === 1 && items[0][1] === "img") return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
-      const nav = items.length > 1 ? `
+      if (!pics.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
+      if (pics.length === 1) return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
+      return `<div class="gallery fade-gallery" data-current="0">
+        <div class="slides">${pics.map((src, i) => `<img src="${src}" alt="منتجات ${f.name} - الصورة ${i + 1}" loading="lazy" class="${i === 0 ? "active" : ""}" aria-hidden="${i !== 0}">`).join("")}</div>
         <button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button>
         <button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button>
-        <span class="count">1 / ${items.length}</span>` : "";
-      return `<div class="gallery"><div class="slides">${items.map(el).join("")}</div>${nav}</div>`;
+        <span class="count">1 / ${pics.length}</span>
+      </div>`;
     };
+    const showGalleryPhoto = (galleryEl, next) => {
+      const photos = [...galleryEl.querySelectorAll(".slides img")];
+      if (!photos.length) return;
+      const index = ((next % photos.length) + photos.length) % photos.length;
+      photos.forEach((photo, i) => {
+        photo.classList.toggle("active", i === index);
+        photo.setAttribute("aria-hidden", String(i !== index));
+      });
+      galleryEl.dataset.current = String(index);
+      galleryEl.querySelector(".count").textContent = (index + 1) + " / " + photos.length;
+    };
+    const pauseGallery = galleryEl => {
+      galleryEl.dataset.pauseUntil = String(Date.now() + 10000);
+    };
+    // One timer updates each visible business independently; no video playback.
+    setInterval(() => {
+      if (document.hidden || !box.hidden) return;
+      document.querySelectorAll("#reel .fade-gallery").forEach(galleryEl => {
+        if (Date.now() < Number(galleryEl.dataset.pauseUntil || 0)) return;
+        if (!galleryEl.getBoundingClientRect().width) return;
+        showGalleryPhoto(galleryEl, Number(galleryEl.dataset.current || 0) + 1);
+      });
+    }, 5000);
+    let touchStartX = null;
+    reel.addEventListener("touchstart", e => {
+      touchStartX = e.target.closest(".fade-gallery") ? e.touches[0].clientX : null;
+    }, { passive: true });
+    reel.addEventListener("touchend", e => {
+      const g = e.target.closest(".fade-gallery");
+      if (!g || touchStartX === null) return;
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      touchStartX = null;
+      if (Math.abs(dx) < 45) return;
+      showGalleryPhoto(g, Number(g.dataset.current || 0) + (dx > 0 ? 1 : -1));
+      pauseGallery(g);
+    }, { passive: true });
 
     const postHTML = f => {
       const on = liked.has(f.name);
@@ -144,12 +177,12 @@
       const post = e.target.closest(".post"); if (!post) return;
       const nav = e.target.closest(".g-btn");
       if (nav) {
-        const sl = nav.parentElement.querySelector(".slides");
-        const d = getComputedStyle(sl).direction === "rtl" ? -1 : 1;
-        sl.scrollBy({ left: (nav.dataset.dir === "next" ? 1 : -1) * d * sl.clientWidth, behavior: "smooth" });
+        const g = nav.closest(".fade-gallery");
+        showGalleryPhoto(g, Number(g.dataset.current || 0) + (nav.dataset.dir === "next" ? 1 : -1));
+        pauseGallery(g);
         return;
       }
-      const pic = e.target.closest(".post-img, .slides img");
+      const pic = e.target.closest(".post-img, .slides img.active");
       if (pic) { openBox(pic.src, pic.alt); return; }
       const f = FAMILIES.find(x => x.name === post.dataset.name); if (!f) return;
       const like = e.target.closest(".like"), share = e.target.closest(".share");
@@ -194,15 +227,6 @@
         console.error(error);
       } finally { button.disabled = false; }
     });
-
-    // عدّاد الصور 1 / 3
-    reel.addEventListener("scroll", e => {
-      const sl = e.target;
-      if (!sl.classList || !sl.classList.contains("slides")) return;
-      const k = Math.round(Math.abs(sl.scrollLeft) / sl.clientWidth);
-      const c = sl.parentElement.querySelector(".count");
-      if (c) c.textContent = (k + 1) + " / " + sl.children.length;
-    }, true);
 
     // يستخدمها شريط البحث العلوي
     window.searchFamilies = t => {
