@@ -33,7 +33,7 @@ const FAMILIES = [
     cat: "projects",
     desc: "متجر متخصص في تصميم العروض التقديمية والخدمات الإلكترونيه والمحتوى الرقمي بأسلوب إبداعي ومميز، من العروض المدرسية والتعليمية إلى التصاميم، المواقع التفاعلية، الفيديوهات والمشاريع الرقمية. نهتم بأدق التفاصيل  فكرتك إلى عمل مرتب، جذاب، وجاهز للاستخدام.✨",
     link: "https://api.whatsapp.com/send?phone=9660500838531",
-    images: ["photos/bloomy store photos/1lamu.jpg", "photos/bloomy store photos/2lamu.jpg", "photos/bloomy store photos/3lamu.jpg", "photos/bloomy store photos/4lamu.jpg", "photos/bloomy store photos/5lamu.jpg"],
+    images: ["photos/bloomy store photos/01.jpeg","photos/bloomy store photos/02.jpeg","photos/bloomy store photos/03.jpeg","photos/bloomy store photos/04.jpeg","photos/bloomy store photos/05.jpeg","photos/bloomy store photos/06.jpeg","photos/bloomy store photos/07.jpeg","photos/bloomy store photos/08.jpeg","photos/bloomy store photos/09.jpeg","photos/bloomy store photos/10.jpeg"],
     tags: ["تصاميم", "مشاريع"]
   },
   {
