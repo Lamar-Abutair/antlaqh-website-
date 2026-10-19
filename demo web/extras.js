@@ -97,6 +97,11 @@
           : `<img src="${src}" alt="منتجات ${f.name}" loading="lazy">`;
         return `<div class="gallery"><div class="slides">${items.map(el).join("")}</div>${items.length > 1 ? `<button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${items.length}</span>` : ""}</div>`;
       }
+      if (f.name !== "تصاميم بلومي") {
+        if (!pics.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
+        if (pics.length === 1) return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
+        return `<div class="gallery"><div class="slides">${pics.map(src=>`<img src="${src}" alt="منتجات ${f.name}" loading="lazy">`).join("")}</div><button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${pics.length}</span></div>`;
+      }
       if (!pics.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
       if (pics.length === 1) return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
       return `<div class="gallery fade-gallery" data-current="0"><div class="slides">${pics.map((src,i)=>`<img src="${src}" alt="منتجات ${f.name} - الصورة ${i+1}" loading="lazy" class="${i===0?"active":""}" aria-hidden="${i!==0}">`).join("")}</div><button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${pics.length}</span></div>`;
