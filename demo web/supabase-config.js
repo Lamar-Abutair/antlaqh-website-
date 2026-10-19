@@ -1,6 +1,6 @@
-// Replace with Project URL and the publishable (or legacy anon) key from Supabase.
-// Never paste a service_role or secret key into this file.
+// Public Supabase project URL and publishable key (safe for browser use).
+// Never place a secret or service_role key here.
 window.ANTLAQH_SUPABASE = {
-  url: "",
-  anonKey: ""
+  url: "https://bqinoppbesqhoorhcgjn.supabase.co",
+  anonKey: "sb_publishable_HiUbohXYNh2E2-EbjmrQ7A_Q1oQ5pWu"
 };
