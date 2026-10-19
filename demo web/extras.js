@@ -49,7 +49,7 @@
         "★".repeat(r.rating) + "☆".repeat(5 - r.rating) +
         '</span><p>' + safeText(r.comment) + '</p></div>').join("");
       return '<section class="customer-reviews"><h3>تقييمات العملاء</h3>' +
-        '<p class="review-note">' + (supabaseReady ? 'تظهر التقييمات بعد مراجعتها واعتمادها.' : 'التقييمات غير متاحة مؤقتًا حتى يتم ربط قاعدة البيانات.') + '</p>' +
+        '<p class="review-note">' + (supabaseReady ? 'تظهر التقييمات للجميع فور إرسالها.' : 'التقييمات غير متاحة مؤقتًا حتى يتم ربط قاعدة البيانات.') + '</p>' +
         '<div class="review-list">' + (entries || '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>') + '</div>' +
         (supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label>' +
         '<label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
@@ -187,7 +187,8 @@
         await api("reviews", { method: "POST", headers: { Prefer: "return=minimal" },
           body: JSON.stringify({ business_name: post.dataset.name, customer_name: customerName, rating, comment }) });
         form.reset();
-        status.textContent = "شكرًا! تم إرسال تقييمك للمراجعة قبل نشره.";
+        status.textContent = "شكرًا! تم نشر تقييمك.";
+        await refreshReviews();
       } catch (error) {
         status.textContent = "تعذّر إرسال التقييم. حاولي مرة أخرى.";
         console.error(error);
