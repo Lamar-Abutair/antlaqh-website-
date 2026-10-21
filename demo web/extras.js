@@ -42,20 +42,17 @@
       if (!response.ok) throw new Error("Supabase request failed: " + response.status);
       return response.status === 204 ? null : response.json();
     });
+    const reviewItem = r => '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) + '</span><p>' + safeText(r.comment) + '</p></div>';
     const reviewsHTML = name => {
       const reviews = reviewCache.get(name) || [];
-      const entries = reviews.map(r =>
-        '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' +
-        "★".repeat(r.rating) + "☆".repeat(5 - r.rating) +
-        '</span><p>' + safeText(r.comment) + '</p></div>').join("");
-      return '<section class="customer-reviews"><h3>تقييمات العملاء</h3>' +
-        '<p class="review-note">' + (supabaseReady ? 'تظهر التقييمات للجميع فور إرسالها.' : 'التقييمات غير متاحة مؤقتًا حتى يتم ربط قاعدة البيانات.') + '</p>' +
-        '<div class="review-list">' + (entries || '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>') + '</div>' +
-        (supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label>' +
-        '<label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
-        [5,4,3,2,1].map(n => '<option value="' + n + '">' + "★".repeat(n) + ' (' + n + ')</option>').join("") +
-        '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label>' +
-        '<button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '') + '</section>';
+      const latest = reviews.length ? reviewItem(reviews[0]) : '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>';
+      const older = reviews.slice(1).map(reviewItem).join("");
+      const form = supabaseReady ? '<details class="review-compose"><summary>＋ إضافة تقييم</summary><form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
+        [5,4,3,2,1].map(n => '<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
+        '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form></details>' : '';
+      return '<section class="customer-reviews"><h3>تقييمات العملاء <small>('+reviews.length+')</small></h3><div class="review-list">'+latest+'</div>' +
+        (older ? '<details class="review-more"><summary>عرض بقية التقييمات ('+(reviews.length-1)+')</summary><div class="review-list">'+older+'</div></details>' : '') +
+        form + (!supabaseReady ? '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>' : '') + '</section>';
     };
     const refreshReviews = async () => {
       if (!supabaseReady) return;
@@ -226,8 +223,8 @@
         await api("reviews", { method: "POST", headers: { Prefer: "return=minimal" },
           body: JSON.stringify({ business_name: post.dataset.name, customer_name: customerName, rating, comment }) });
         form.reset();
-        status.textContent = "شكرًا! تم نشر تقييمك.";
-        await refreshReviews();
+        status.textContent = "تم إرسال تقييمك بنجاح ✓";
+        try { await refreshReviews(); } catch (refreshError) { console.warn("Review refresh failed after save", refreshError); }
       } catch (error) {
         status.textContent = "تعذّر إرسال التقييم. حاولي مرة أخرى.";
         console.error(error);
