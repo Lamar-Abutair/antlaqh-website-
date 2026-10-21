@@ -139,3 +139,18 @@
     object-fit: contain;
   }
 }
+
+/* Compact customer review panel */
+.customer-reviews{padding:12px 18px 15px}
+.customer-reviews h3{font-size:1rem;margin:0 0 8px}
+.customer-reviews h3 small{font-size:.8rem;color:var(--mu);font-weight:500}
+.customer-reviews .review-list{margin:4px 0 8px;gap:6px}
+.customer-reviews .review-item{padding:9px 12px;font-size:.88rem}
+.customer-reviews .review-item p{line-height:1.5}
+.customer-reviews details>summary{cursor:pointer;list-style:none;font-size:.88rem;font-weight:700;color:var(--teal);padding:9px 12px;border:1px solid var(--edge);border-radius:12px;background:var(--soft)}
+.customer-reviews details>summary::-webkit-details-marker{display:none}
+.customer-reviews details>summary::after{content:"⌄";float:left}
+.customer-reviews details[open]>summary::after{content:"⌃"}
+.customer-reviews .review-more{margin-bottom:8px}
+.customer-reviews .review-compose{margin-top:8px}
+.customer-reviews .review-form{padding:12px 4px 4px;gap:9px}
