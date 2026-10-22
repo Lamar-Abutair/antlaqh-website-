@@ -224,3 +224,6 @@
 .fade-gallery .slides > video{grid-area:1/1;width:100%;height:100%;object-fit:contain;opacity:0;visibility:hidden;pointer-events:none;transition:opacity .75s ease,visibility .75s ease}
 .fade-gallery .slides > video.active{opacity:1;visibility:visible;pointer-events:auto;z-index:1}
 @media(prefers-reduced-motion:reduce){.fade-gallery .slides > video{transition:none}}
+
+/* Preserve the paragraph spacing in Bloomy Designs' description */
+.post[data-name="تصاميم بلومي"] .post-body p{white-space:pre-line}
