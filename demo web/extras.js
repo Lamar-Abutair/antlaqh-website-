@@ -229,7 +229,7 @@
     });
     find.addEventListener("input", () => { term = find.value.trim(); filter(); });
 
-    reel.addEventListener("click", e => {
+    reel.addEventListener("click", async e => {
       const post = e.target.closest(".post"); if (!post) return;
       if (e.target.closest(".review-open")) { showReview(post.dataset.name); return; }
       if (e.target.closest(".review-more-open")) { showAllReviews(post.dataset.name); return; }
