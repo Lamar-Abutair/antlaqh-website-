@@ -198,3 +198,9 @@
 .customer-reviews .review-more>summary::after{content:" ⌄"}
 .customer-reviews .review-more[open]>summary::after{content:" ⌃"}
 .customer-reviews .review-more[open]>summary{margin-bottom:5px}
+
+/* More reviews opens a separate modal, not an inline expansion */
+.customer-reviews .review-more-open{display:inline-block;margin-top:5px;border:0;background:transparent;color:var(--teal);font:inherit;font-size:.85rem;font-weight:700;cursor:pointer;padding:4px 0}
+.review-dialog-list{max-height:min(65vh,550px);overflow:auto}
+.review-dialog-list .review-item{padding:10px 4px;border-bottom:1px solid var(--edge);background:transparent;border-radius:0}
+.review-dialog-list .review-item:last-child{border-bottom:0}
