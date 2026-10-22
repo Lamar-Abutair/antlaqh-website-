@@ -40,8 +40,12 @@
         "Content-Type": "application/json", ...options.headers }
     }).then(async response => {
       if (!response.ok) throw new Error("Supabase request failed: " + response.status);
-      return response.status === 204 ? null : response.json();
+      const body = await response.text(); return body ? JSON.parse(body) : null;
     });
+    const limitKey = name => "antlaqh:review-count:v1:" + encodeURIComponent(name);
+    const reviewCount = name => { try { return Math.max(0, Number(localStorage.getItem(limitKey(name))) || 0); } catch { return 3; } };
+    const saveCount = (name,count) => { try { localStorage.setItem(limitKey(name),String(count)); return true; } catch { return false; } };
+    const limitMessage = "لقد وصلت إلى الحد الأقصى للتعليقات (3 تعليقات لهذا المتجر).";
     const reviewItem = r => '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) + '</span><p>' + safeText(r.comment) + '</p></div>';
     const reviewsHTML = name => {
       const reviews = reviewCache.get(name) || [];
@@ -77,6 +81,7 @@
       document.body.insertAdjacentHTML("beforeend",popupHTML(name));
       document.querySelector(".review-dialog").dataset.businessName=name;
       document.body.classList.add("reviews-modal-open");
+      if (reviewCount(name)>=3) { const form=document.querySelector(".review-dialog .review-form"); if(form){form.querySelector('[type="submit"]').disabled=true;form.querySelector(".review-status").textContent=limitMessage;} }
       document.querySelector(".review-close")?.focus();
     };
     document.addEventListener("click",e=>{
@@ -245,13 +250,17 @@
       const comment=form.elements.review.value.trim();
       if(!name || customerName.length<2 || customerName.length>60 || !Number.isInteger(rating) || rating<1 || rating>5 || comment.length>500)return;
       const button=form.querySelector('[type="submit"]'),status=form.querySelector(".review-status");
+      if(reviewCount(name)>=3){button.disabled=true;status.textContent=limitMessage;return;}
       button.disabled=true;status.textContent="جارٍ إرسال التقييم...";
       try{
         await api("reviews",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({business_name:name,customer_name:customerName,rating,comment})});
-        form.reset();status.textContent="تم إرسال تقييمك بنجاح ✓";
+        const count=reviewCount(name)+1;
+        const saved=saveCount(name,count);
+        form.reset();status.textContent=saved?(count>=3?"تم إرسال تقييمك بنجاح ✓ "+limitMessage:"تم إرسال تقييمك بنجاح ✓ (المتبقي: "+(3-count)+")"):"تم إرسال تقييمك، لكن تعذّر حفظ عداد التعليقات.";
+        if(count>=3||!saved)button.disabled=true;
         await refreshReviews();
       }catch(error){console.error(error);status.textContent="تعذّر تأكيد إرسال التقييم. تحققي من ظهوره قبل إعادة المحاولة.";}
-      finally{button.disabled=false;}
+      finally{if(reviewCount(name)<3)button.disabled=false;}
     });
 
     // عدّاد الصور 1 / 3
