@@ -49,7 +49,7 @@
       const form = supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
         [5,4,3,2,1].map(n=>'<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
         '</select></label><label>تعليقك (اختياري)<textarea name="review" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>';
-      return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="تعليقات '+safeText(name)+'"><header><h3>أضف تعليقًا · '+safeText(name)+'</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-list">'+entries+'</div><details class="review-dialog-compose"><summary>＋ إضافة تقييم</summary>'+form+'</details></section></div>';
+      return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="أضف تعليقًا"><header><h3>أضف تعليقًا</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-compose">'+form+'</div></section></div>';
     };
     const dismissReview = () => {
       const dialog = document.querySelector(".review-dialog-backdrop");
@@ -59,6 +59,7 @@
     const showReview = name => {
       dismissReview();
       document.body.insertAdjacentHTML("beforeend",popupHTML(name));
+      document.querySelector(".review-dialog").dataset.businessName=name;
       document.body.classList.add("reviews-modal-open");
       document.querySelector(".review-close")?.focus();
     };
@@ -221,7 +222,7 @@
       const form=e.target.closest(".review-dialog .review-form");
       if(!form || !supabaseReady)return;
       e.preventDefault();
-      const name=document.querySelector(".review-dialog h3")?.textContent?.replace(/^التعليقات · /,"");
+      const name=document.querySelector(".review-dialog")?.dataset.businessName;
       const customerName=form.elements.customer_name.value.trim();
       const rating=Number(form.elements.rating.value);
       const comment=form.elements.review.value.trim();
