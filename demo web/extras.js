@@ -146,7 +146,7 @@
     const gallery = f => {
       const pics = (f.images && f.images.length ? f.images : [f.image]).filter(Boolean);
       const hasVideo = Boolean(f.video) || pics.some(isVid);
-      if (hasVideo) {
+      if (hasVideo && f.name !== "تصاميم بلومي") {
         const items = [...(f.video ? [[f.video, "video"]] : []), ...pics.map(p => [p, isVid(p) ? "video" : "img"])];
         const el = ([src, kind]) => kind === "video"
           ? `<video controls playsinline preload="metadata"><source src="${src}" type="${/\\.webm/i.test(src) ? "video/webm" : "video/mp4"}"></video>`
