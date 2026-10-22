@@ -207,7 +207,7 @@
       return `
       <article class="post" data-name="${f.name}">
         <header class="post-head">
-          <div><b>${f.name}</b><small>${f.handle || ""}</small></div>
+          <div><b>${f.name === "تصاميم بلومي" ? "تصاميم بلومي | bloomy designs" : f.name}</b><small>${f.handle || ""}</small></div>
           <span class="tag">${CATEGORIES[f.cat] || ""}</span>
         </header>
         ${gallery(f)}
@@ -216,7 +216,7 @@
           <button type="button" class="act share" aria-label="مشاركة">⤴</button>
         </div>
         <div class="post-body">
-          <p>${f.name === "تصاميم بلومي" ? `<b>${f.name}</b>` + f.desc.split("\n\n").map(part => `<span class="bloomy-paragraph">${part}</span>`).join("") : `<b>${f.name}</b> ${f.desc}`}</p>
+          <p>${f.name === "تصاميم بلومي" ? `<b>تصاميم بلومي | bloomy designs</b>` + f.desc.split("\n\n").map(part => `<span class="bloomy-paragraph">${part}</span>`).join("") : `<b>${f.name}</b> ${f.desc}`}</p>
           <div class="store-buttons"><a class="btn-link" href="${f.link}" target="_blank" rel="noopener">زيارة المتجر</a><button type="button" class="btn-link store-comment-btn review-open">أضف تعليقًا</button></div>
         </div>
         ${reviewsHTML(f.name)}
