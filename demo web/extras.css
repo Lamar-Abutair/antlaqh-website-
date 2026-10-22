@@ -172,3 +172,14 @@
 .review-dialog-compose{margin-top:12px;border-top:1px solid var(--edge);padding-top:12px}
 .review-dialog-compose summary{cursor:pointer;color:var(--teal);font-weight:700;padding:7px 0}
 .review-dialog .review-form{padding-top:12px;display:grid;gap:10px}
+
+/* Comment action next to store link, rather than a separate review block */
+.store-buttons{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:12px}
+.store-buttons .btn-link{margin:0;text-decoration:none}
+.store-comment-btn{font:inherit;cursor:pointer;border:1px solid var(--edge);background:var(--soft);color:var(--teal);padding:11px 18px;border-radius:999px;font-weight:700}
+.customer-reviews .review-open{display:none}
+.customer-reviews{padding:2px 18px 12px}
+.customer-reviews .review-preview{font-size:.82rem}
+.review-dialog-history{margin-top:16px;border-top:1px solid var(--edge);padding-top:12px}
+.review-dialog-history summary{cursor:pointer;color:var(--teal);font-weight:700}
+.review-dialog-history .review-dialog-list{margin-top:10px}
