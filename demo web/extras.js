@@ -45,15 +45,33 @@
     const reviewItem = r => '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) + '</span><p>' + safeText(r.comment) + '</p></div>';
     const reviewsHTML = name => {
       const reviews = reviewCache.get(name) || [];
-      const latest = reviews.length ? reviewItem(reviews[0]) : '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>';
-      const older = reviews.slice(1).map(reviewItem).join("");
-      const form = supabaseReady ? '<details class="review-compose"><summary>＋ إضافة تقييم</summary><form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
-        [5,4,3,2,1].map(n => '<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
-        '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form></details>' : '';
-      return '<section class="customer-reviews"><h3>تقييمات العملاء <small>('+reviews.length+')</small></h3><div class="review-list">'+latest+'</div>' +
-        (older ? '<details class="review-more"><summary>عرض بقية التقييمات ('+(reviews.length-1)+')</summary><div class="review-list">'+older+'</div></details>' : '') +
-        form + (!supabaseReady ? '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>' : '') + '</section>';
+      const latest = reviews[0];
+      return '<section class="customer-reviews"><button type="button" class="review-open" aria-haspopup="dialog">💬 التعليقات <span>('+reviews.length+')</span></button>' +
+        (latest ? '<p class="review-preview"><strong>'+safeText(latest.customer_name)+'</strong> '+safeText(latest.comment)+'</p>' : '') + '</section>';
     };
+    const popupHTML = name => {
+      const reviews = reviewCache.get(name) || [];
+      const entries = reviews.map(reviewItem).join("") || '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>';
+      const form = supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
+        [5,4,3,2,1].map(n=>'<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
+        '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>';
+      return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="تعليقات '+safeText(name)+'"><header><h3>التعليقات · '+safeText(name)+'</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-list">'+entries+'</div><details class="review-dialog-compose"><summary>＋ إضافة تقييم</summary>'+form+'</details></section></div>';
+    };
+    const dismissReview = () => {
+      const dialog = document.querySelector(".review-dialog-backdrop");
+      if (dialog) dialog.remove();
+      document.body.classList.remove("reviews-modal-open");
+    };
+    const showReview = name => {
+      dismissReview();
+      document.body.insertAdjacentHTML("beforeend",popupHTML(name));
+      document.body.classList.add("reviews-modal-open");
+      document.querySelector(".review-close")?.focus();
+    };
+    document.addEventListener("click",e=>{
+      if (e.target.matches(".review-dialog-backdrop, .review-close")) dismissReview();
+    });
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")dismissReview();});
     const refreshReviews = async () => {
       if (!supabaseReady) return;
       try {
@@ -172,6 +190,7 @@
 
     reel.addEventListener("click", e => {
       const post = e.target.closest(".post"); if (!post) return;
+      if (e.target.closest(".review-open")) { showReview(post.dataset.name); return; }
       const nav = e.target.closest(".g-btn");
       if (nav) {
         const fade=nav.closest(".fade-gallery");
@@ -204,31 +223,23 @@
     });
 
 
-    reel.addEventListener("submit", async e => {
-      const form = e.target.closest(".review-form");
-      if (!form || !supabaseReady) return;
+    document.addEventListener("submit",async e=>{
+      const form=e.target.closest(".review-dialog .review-form");
+      if(!form || !supabaseReady)return;
       e.preventDefault();
-      const post = form.closest(".post");
-      const customerName = form.elements.customer_name.value.trim();
-      const rating = Number(form.elements.rating.value);
-      const comment = form.elements.review.value.trim();
-      if (!post || customerName.length < 2 || customerName.length > 60 ||
-          !Number.isInteger(rating) || rating < 1 || rating > 5 ||
-          comment.length < 3 || comment.length > 500) return;
-      const button = form.querySelector('button[type="submit"]');
-      const status = form.querySelector(".review-status");
-      button.disabled = true;
-      status.textContent = "جارٍ إرسال التقييم...";
-      try {
-        await api("reviews", { method: "POST", headers: { Prefer: "return=minimal" },
-          body: JSON.stringify({ business_name: post.dataset.name, customer_name: customerName, rating, comment }) });
-        form.reset();
-        status.textContent = "تم إرسال تقييمك بنجاح ✓";
-        try { await refreshReviews(); } catch (refreshError) { console.warn("Review refresh failed after save", refreshError); }
-      } catch (error) {
-        status.textContent = "تعذّر إرسال التقييم. حاولي مرة أخرى.";
-        console.error(error);
-      } finally { button.disabled = false; }
+      const name=document.querySelector(".review-dialog h3")?.textContent?.replace(/^التعليقات · /,"");
+      const customerName=form.elements.customer_name.value.trim();
+      const rating=Number(form.elements.rating.value);
+      const comment=form.elements.review.value.trim();
+      if(!name || customerName.length<2 || customerName.length>60 || !Number.isInteger(rating) || rating<1 || rating>5 || comment.length<3 || comment.length>500)return;
+      const button=form.querySelector('[type="submit"]'),status=form.querySelector(".review-status");
+      button.disabled=true;status.textContent="جارٍ إرسال التقييم...";
+      try{
+        await api("reviews",{method:"POST",headers:{Prefer:"return=minimal"},body:JSON.stringify({business_name:name,customer_name:customerName,rating,comment})});
+        form.reset();status.textContent="تم إرسال تقييمك بنجاح ✓";
+        await refreshReviews();
+      }catch(error){console.error(error);status.textContent="تعذّر تأكيد إرسال التقييم. تحققي من ظهوره قبل إعادة المحاولة.";}
+      finally{button.disabled=false;}
     });
 
     // عدّاد الصور 1 / 3
