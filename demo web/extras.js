@@ -160,23 +160,34 @@
       }
       if (!pics.length) return `<img class="post-img" src="${art(f)}" alt="منتجات ${f.name}">`;
       if (pics.length === 1) return `<img class="post-img" src="${pics[0]}" alt="منتجات ${f.name}" loading="lazy">`;
-      return `<div class="gallery fade-gallery" data-current="0"><div class="slides">${pics.map((src,i)=>`<img src="${src}" alt="منتجات ${f.name} - الصورة ${i+1}" loading="lazy" class="${i===0?"active":""}" aria-hidden="${i!==0}">`).join("")}</div><button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${pics.length}</span></div>`;
+      return `<div class="gallery fade-gallery" data-current="0"><div class="slides">${pics.map((src,i)=>isVid(src)
+        ? `<video src="${src}" muted autoplay playsinline preload="metadata" class="${i===0?"active":""}" aria-hidden="${i!==0}"></video>`
+        : `<img src="${src}" alt="منتجات ${f.name} - الصورة ${i+1}" loading="lazy" class="${i===0?"active":""}" aria-hidden="${i!==0}">`).join("")}</div><button type="button" class="g-btn prev" data-dir="prev" aria-label="السابق">›</button><button type="button" class="g-btn next" data-dir="next" aria-label="التالي">‹</button><span class="count">1 / ${pics.length}</span></div>`;
     };
     const showFade = (g, index) => {
-      const imgs = [...g.querySelectorAll(".slides img")];
-      if (!imgs.length) return;
-      const i = ((index % imgs.length) + imgs.length) % imgs.length;
-      imgs.forEach((img,n) => { img.classList.toggle("active",n===i); img.setAttribute("aria-hidden",String(n!==i)); });
+      const items = [...g.querySelectorAll(".slides > img, .slides > video")];
+      if (!items.length) return;
+      const i = ((index % items.length) + items.length) % items.length;
+      items.forEach((item,n) => {
+        item.classList.toggle("active",n===i);
+        item.setAttribute("aria-hidden",String(n!==i));
+        if (item.tagName === "VIDEO") {
+          if(n!==i) { item.pause(); item.currentTime=0; }
+          else { item.currentTime=0; item.play().catch(()=>{}); }
+        }
+      });
       g.dataset.current=String(i);
-      g.querySelector(".count").textContent=`${i+1} / ${imgs.length}`;
+      g.dataset.nextAt=String(Date.now()+(items[i].tagName==="VIDEO"?13000:3000));
+      g.querySelector(".count").textContent=`${i+1} / ${items.length}`;
     };
     setInterval(() => {
       if (document.hidden || !box.hidden) return;
       reel.querySelectorAll(".fade-gallery").forEach(g => {
         if (Date.now() < Number(g.dataset.pauseUntil||0)) return;
-        showFade(g,Number(g.dataset.current||0)+1);
+        if (!g.dataset.nextAt) { g.dataset.nextAt=String(Date.now()+3000); return; }
+        if (Date.now() >= Number(g.dataset.nextAt)) showFade(g,Number(g.dataset.current||0)+1);
       });
-    },3000);
+    },250);
     reel.addEventListener("touchstart", e => {
       const g=e.target.closest(".fade-gallery");
       if(g) g.dataset.touchX=String(e.touches[0].clientX);
