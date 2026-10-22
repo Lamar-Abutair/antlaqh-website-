@@ -231,3 +231,8 @@
 /* Distinct paragraphs for Bloomy description on mobile and desktop */
 .post[data-name="تصاميم بلومي"] .post-body .bloomy-paragraph{display:block;margin-bottom:1em;white-space:normal}
 .post[data-name="تصاميم بلومي"] .post-body .bloomy-paragraph:last-child{margin-bottom:0}
+
+/* Keep the Bloomy title separate from the three bio paragraphs */
+.post[data-name="تصاميم بلومي"] .post-body p > b{display:block;margin-bottom:1em}
+.post[data-name="تصاميم بلومي"] .post-body .bloomy-paragraph{display:block;margin:0 0 1em;white-space:pre-line}
+.post[data-name="تصاميم بلومي"] .post-body .bloomy-paragraph:last-child{margin-bottom:0}
