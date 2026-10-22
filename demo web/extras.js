@@ -47,15 +47,25 @@
       const reviews = reviewCache.get(name) || [];
       if (!reviews.length) return '<section class="customer-reviews" aria-label="تقييمات العملاء"></section>';
       const first = reviewItem(reviews[0]);
-      const rest = reviews.slice(1).map(reviewItem).join("");
+      
       return '<section class="customer-reviews" aria-label="تقييمات العملاء"><div class="review-list">'+first+'</div>' +
-        (rest ? '<details class="review-more"><summary>إظهار المزيد ('+(reviews.length-1)+')</summary><div class="review-list">'+rest+'</div></details>' : '') + '</section>';
+        (reviews.length>1 ? '<button type="button" class="review-more-open">إظهار المزيد ('+(reviews.length-1)+') ⌄</button>' : '') + '</section>';
     };
     const popupHTML = name => {
       const form = supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
         [5,4,3,2,1].map(n=>'<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
         '</select></label><label>تعليقك (اختياري)<textarea name="review" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>';
       return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="أضف تعليقًا"><header><h3>أضف تعليقًا</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-compose">'+form+'</div></section></div>';
+    };
+    const allReviewsHTML = name => {
+      const reviews = reviewCache.get(name) || [];
+      return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="تعليقات '+safeText(name)+'"><header><h3>تعليقات '+safeText(name)+'</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-list">'+reviews.map(reviewItem).join("")+'</div></section></div>';
+    };
+    const showAllReviews = name => {
+      dismissReview();
+      document.body.insertAdjacentHTML("beforeend",allReviewsHTML(name));
+      document.body.classList.add("reviews-modal-open");
+      document.querySelector(".review-close")?.focus();
     };
     const dismissReview = () => {
       const dialog = document.querySelector(".review-dialog-backdrop");
@@ -192,6 +202,7 @@
     reel.addEventListener("click", e => {
       const post = e.target.closest(".post"); if (!post) return;
       if (e.target.closest(".review-open")) { showReview(post.dataset.name); return; }
+      if (e.target.closest(".review-more-open")) { showAllReviews(post.dataset.name); return; }
       const nav = e.target.closest(".g-btn");
       if (nav) {
         const fade=nav.closest(".fade-gallery");
