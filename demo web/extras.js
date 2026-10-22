@@ -43,19 +43,13 @@
       return response.status === 204 ? null : response.json();
     });
     const reviewItem = r => '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) + '</span><p>' + safeText(r.comment) + '</p></div>';
-    const reviewsHTML = name => {
-      const reviews = reviewCache.get(name) || [];
-      const latest = reviews[0];
-      return '<section class="customer-reviews"><button type="button" class="review-open" aria-haspopup="dialog">💬 التعليقات <span>('+reviews.length+')</span></button>' +
-        (latest ? '<p class="review-preview"><strong>'+safeText(latest.customer_name)+'</strong> '+safeText(latest.comment)+'</p>' : '') + '</section>';
-    };
+    // Reviews are accessed only through the button beside Visit Store.
+    const reviewsHTML = () => "";
     const popupHTML = name => {
-      const reviews = reviewCache.get(name) || [];
-      const entries = reviews.map(reviewItem).join("") || '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>';
       const form = supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
         [5,4,3,2,1].map(n=>'<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
         '</select></label><label>تعليقك (اختياري)<textarea name="review" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>';
-      return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="تعليقات '+safeText(name)+'"><header><h3>التعليقات · '+safeText(name)+'</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-list">'+entries+'</div><details class="review-dialog-compose"><summary>＋ إضافة تقييم</summary>'+form+'</details></section></div>';
+      return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="تعليقات '+safeText(name)+'"><header><h3>أضف تعليقًا · '+safeText(name)+'</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-list">'+entries+'</div><details class="review-dialog-compose"><summary>＋ إضافة تقييم</summary>'+form+'</details></section></div>';
     };
     const dismissReview = () => {
       const dialog = document.querySelector(".review-dialog-backdrop");
