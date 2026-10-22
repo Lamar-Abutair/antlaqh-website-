@@ -183,3 +183,18 @@
 .review-dialog-history{margin-top:16px;border-top:1px solid var(--edge);padding-top:12px}
 .review-dialog-history summary{cursor:pointer;color:var(--teal);font-weight:700}
 .review-dialog-history .review-dialog-list{margin-top:10px}
+
+/* One visible review beneath the store buttons; expand others on demand */
+.customer-reviews{padding:0 18px 14px;border:0;background:transparent}
+.customer-reviews:empty{display:none}
+.customer-reviews .review-list{display:grid;gap:6px;margin:0}
+.customer-reviews .review-item{background:transparent;border:0;box-shadow:none;padding:6px 0;font-size:.87rem}
+.customer-reviews .review-item strong{font-weight:700}
+.customer-reviews .review-item p{margin:3px 0 0;line-height:1.5;overflow-wrap:anywhere}
+.customer-reviews .review-stars{font-size:.85rem}
+.customer-reviews .review-more{margin-top:4px}
+.customer-reviews .review-more>summary{display:inline-block;cursor:pointer;border:0;background:transparent;color:var(--teal);padding:3px 0;font-size:.85rem;font-weight:700;list-style:none}
+.customer-reviews .review-more>summary::-webkit-details-marker{display:none}
+.customer-reviews .review-more>summary::after{content:" ⌄"}
+.customer-reviews .review-more[open]>summary::after{content:" ⌃"}
+.customer-reviews .review-more[open]>summary{margin-bottom:5px}
