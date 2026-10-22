@@ -227,3 +227,7 @@
 
 /* Preserve the paragraph spacing in Bloomy Designs' description */
 .post[data-name="تصاميم بلومي"] .post-body p{white-space:pre-line}
+
+/* Distinct paragraphs for Bloomy description on mobile and desktop */
+.post[data-name="تصاميم بلومي"] .post-body .bloomy-paragraph{display:block;margin-bottom:1em;white-space:normal}
+.post[data-name="تصاميم بلومي"] .post-body .bloomy-paragraph:last-child{margin-bottom:0}
