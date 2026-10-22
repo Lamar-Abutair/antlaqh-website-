@@ -216,7 +216,7 @@
           <button type="button" class="act share" aria-label="مشاركة">⤴</button>
         </div>
         <div class="post-body">
-          <p><b>${f.name}</b> ${f.desc}</p>
+          <p>${f.name === "تصاميم بلومي" ? f.desc.split("\n\n").map(part => `<span class="bloomy-paragraph">${part}</span>`).join("") : `<b>${f.name}</b> ${f.desc}`}</p>
           <div class="store-buttons"><a class="btn-link" href="${f.link}" target="_blank" rel="noopener">زيارة المتجر</a><button type="button" class="btn-link store-comment-btn review-open">أضف تعليقًا</button></div>
         </div>
         ${reviewsHTML(f.name)}
