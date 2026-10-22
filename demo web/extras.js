@@ -27,6 +27,20 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape") closeBox(); });
 
     const liked = new Set();
+    const likeTotals = new Map();
+    let visitorId;
+    try {
+      visitorId = localStorage.getItem("antlaqh:visitor-id");
+      if (!visitorId || !/^[0-9a-f-]{36}$/i.test(visitorId)) {
+        visitorId = crypto.randomUUID();
+        localStorage.setItem("antlaqh:visitor-id",visitorId);
+      }
+    } catch { visitorId = null; }
+    const likeKey = name => "antlaqh:liked:" + encodeURIComponent(name);
+    const hasLiked = name => {
+      try { return localStorage.getItem(likeKey(name)) === "1"; }
+      catch { return liked.has(name); }
+    };
     // Public reviews via Supabase REST API. Only a publishable/anon key belongs in config.
     const config = window.ANTLAQH_SUPABASE || {};
     const supabaseReady = /^https:\/\/[^/]+\.supabase\.co\/?$/.test(config.url || "") &&
@@ -46,6 +60,17 @@
     const reviewCount = name => { try { return Math.max(0, Number(localStorage.getItem(limitKey(name))) || 0); } catch { return 3; } };
     const saveCount = (name,count) => { try { localStorage.setItem(limitKey(name),String(count)); return true; } catch { return false; } };
     const limitMessage = "لقد وصلت إلى الحد الأقصى للتعليقات (3 تعليقات لهذا المتجر).";
+    const loadLikeTotals = async () => {
+      if (!supabaseReady) return;
+      try {
+        const rows = await api("store_like_totals?select=business_name,like_count");
+        for (const row of rows) likeTotals.set(row.business_name,Number(row.like_count)||0);
+        document.querySelectorAll("#reel .post").forEach(post => {
+          const count=post.querySelector(".like-count");
+          if(count)count.textContent=String(likeTotals.get(post.dataset.name)||0);
+        });
+      } catch(error) { console.error("Unable to load like totals",error); }
+    };
     const reviewItem = r => '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) + '</span><p>' + safeText(r.comment) + '</p></div>';
     const reviewsHTML = name => {
       const reviews = reviewCache.get(name) || [];
@@ -167,7 +192,7 @@
     },{passive:true});
 
     const postHTML = f => {
-      const on = liked.has(f.name);
+      const on = hasLiked(f.name);
       return `
       <article class="post" data-name="${f.name}">
         <header class="post-head">
@@ -176,7 +201,7 @@
         </header>
         ${gallery(f)}
         <div class="post-actions">
-          <button type="button" class="act like${on ? " on" : ""}" aria-pressed="${on}" aria-label="إعجاب">${on ? "♥" : "♡"}</button>
+          <button type="button" class="act like${on ? " on" : ""}" aria-pressed="${on}" aria-label="إعجاب">${on ? "♥" : "♡"}</button><span class="like-count" aria-label="عدد الإعجابات">${likeTotals.get(f.name) || 0}</span>
           <button type="button" class="act share" aria-label="مشاركة">⤴</button>
         </div>
         <div class="post-body">
@@ -226,10 +251,21 @@
       const f = FAMILIES.find(x => x.name === post.dataset.name); if (!f) return;
       const like = e.target.closest(".like"), share = e.target.closest(".share");
       if (like) {
-        liked.has(f.name) ? liked.delete(f.name) : liked.add(f.name);
-        const on = liked.has(f.name);
-        like.classList.toggle("on", on); like.setAttribute("aria-pressed", on);
-        like.textContent = on ? "♥" : "♡";
+        if (!supabaseReady || !visitorId || like.disabled) return;
+        const previous=hasLiked(f.name),next=!previous;
+        like.disabled=true;
+        try {
+          const total=await api("rpc/toggle_store_like",{method:"POST",body:JSON.stringify({p_business_name:f.name,p_visitor_id:visitorId,p_like:next})});
+          if(next)liked.add(f.name);else liked.delete(f.name);
+          try { localStorage.setItem(likeKey(f.name),next?"1":"0"); } catch {}
+          like.classList.toggle("on",next);
+          like.setAttribute("aria-pressed",String(next));
+          like.textContent=next?"♥":"♡";
+          likeTotals.set(f.name,Number(total)||0);
+          const count=post.querySelector(".like-count");
+          if(count)count.textContent=String(likeTotals.get(f.name));
+        } catch(error) { console.error("Unable to save like",error); }
+        finally {like.disabled=false;}
       }
       if (share) {
         if (navigator.share) navigator.share({ title: f.name, url: f.link }).catch(() => {});
@@ -280,7 +316,7 @@
       return n;
     };
 
-    renderChips(); filter(); refreshReviews();
+    renderChips(); filter(); refreshReviews(); loadLikeTotals();
   }
 
   /* ---------- Pricing calculator ---------- */
