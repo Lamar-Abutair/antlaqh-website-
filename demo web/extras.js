@@ -43,8 +43,14 @@
       return response.status === 204 ? null : response.json();
     });
     const reviewItem = r => '<div class="review-item"><strong>' + safeText(r.customer_name) + '</strong> <span class="review-stars">' + "★".repeat(r.rating) + "☆".repeat(5-r.rating) + '</span><p>' + safeText(r.comment) + '</p></div>';
-    // Reviews are accessed only through the button beside Visit Store.
-    const reviewsHTML = () => "";
+    const reviewsHTML = name => {
+      const reviews = reviewCache.get(name) || [];
+      if (!reviews.length) return '<section class="customer-reviews" aria-label="تقييمات العملاء"></section>';
+      const first = reviewItem(reviews[0]);
+      const rest = reviews.slice(1).map(reviewItem).join("");
+      return '<section class="customer-reviews" aria-label="تقييمات العملاء"><div class="review-list">'+first+'</div>' +
+        (rest ? '<details class="review-more"><summary>إظهار المزيد ('+(reviews.length-1)+')</summary><div class="review-list">'+rest+'</div></details>' : '') + '</section>';
+    };
     const popupHTML = name => {
       const form = supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
         [5,4,3,2,1].map(n=>'<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
