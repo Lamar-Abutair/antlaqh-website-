@@ -54,7 +54,7 @@
       const entries = reviews.map(reviewItem).join("") || '<p class="review-empty">لا توجد تقييمات منشورة بعد.</p>';
       const form = supabaseReady ? '<form class="review-form"><label>اسمك<input name="customer_name" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="اكتبي اسمك"></label><label>تقييمك<select name="rating" required><option value="">اختاري عدد النجوم</option>' +
         [5,4,3,2,1].map(n=>'<option value="'+n+'">'+ "★".repeat(n) +' ('+n+')</option>').join("") +
-        '</select></label><label>اكتبي رأيك<textarea name="review" required minlength="3" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>';
+        '</select></label><label>تعليقك (اختياري)<textarea name="review" maxlength="500" rows="3" placeholder="كيف كانت تجربتك مع المتجر؟"></textarea></label><button type="submit">إرسال التقييم</button><p class="review-status" role="status" aria-live="polite"></p></form>' : '<p class="review-note">التقييمات غير متاحة مؤقتًا.</p>';
       return '<div class="review-dialog-backdrop"><section class="review-dialog" role="dialog" aria-modal="true" aria-label="تعليقات '+safeText(name)+'"><header><h3>التعليقات · '+safeText(name)+'</h3><button type="button" class="review-close" aria-label="إغلاق">✕</button></header><div class="review-dialog-list">'+entries+'</div><details class="review-dialog-compose"><summary>＋ إضافة تقييم</summary>'+form+'</details></section></div>';
     };
     const dismissReview = () => {
@@ -165,7 +165,7 @@
         </div>
         <div class="post-body">
           <p><b>${f.name}</b> ${f.desc}</p>
-          <a class="btn-link" href="${f.link}" target="_blank" rel="noopener">زيارة المتجر</a>
+          <div class="store-buttons"><a class="btn-link" href="${f.link}" target="_blank" rel="noopener">زيارة المتجر</a><button type="button" class="btn-link store-comment-btn review-open">أضف تعليقًا</button></div>
         </div>
         ${reviewsHTML(f.name)}
       </article>`;
@@ -231,7 +231,7 @@
       const customerName=form.elements.customer_name.value.trim();
       const rating=Number(form.elements.rating.value);
       const comment=form.elements.review.value.trim();
-      if(!name || customerName.length<2 || customerName.length>60 || !Number.isInteger(rating) || rating<1 || rating>5 || comment.length<3 || comment.length>500)return;
+      if(!name || customerName.length<2 || customerName.length>60 || !Number.isInteger(rating) || rating<1 || rating>5 || comment.length>500)return;
       const button=form.querySelector('[type="submit"]'),status=form.querySelector(".review-status");
       button.disabled=true;status.textContent="جارٍ إرسال التقييم...";
       try{
